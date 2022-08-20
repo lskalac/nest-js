@@ -1,4 +1,6 @@
-import { ClassSerializerInterceptor, Controller, Get, HttpException, HttpStatus, Param, UseInterceptors } from '@nestjs/common';
+import { ClassSerializerInterceptor, Controller, Get, HttpException, HttpStatus, NotFoundException, Param, ParseIntPipe, UseFilters, UseInterceptors } from '@nestjs/common';
+import { UserNotFoundException } from 'src/users/exceptions/UserNotFoundException.exception';
+import { HttpExceptionFilter } from 'src/users/filters/HttpException.filter';
 import { UsersService } from 'src/users/services/users/users.service';
 import { SerializedUser } from 'src/users/types/User';
 
@@ -24,7 +26,23 @@ export class UsersController {
         if(user)
             return new SerializedUser(user);
 
+        // nest handles error by himself - it has layer that takes care of that
         throw new HttpException(`User with username ${username} not found`, HttpStatus.NOT_FOUND);
         
+    }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @UseFilters(HttpExceptionFilter)
+    @Get('/by-id/:id')
+    getUserById(@Param('id', ParseIntPipe) id: number){
+        const user = this.userService.getUserById(id);
+        if(user)
+            return new SerializedUser(user);
+        
+        // custom exception
+        throw new UserNotFoundException();
+
+        // there are a lot of built in exceptions, like not found below
+        // throw new NotFoundException('User not found');
     }
 }
