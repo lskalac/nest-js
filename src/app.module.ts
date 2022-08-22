@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CustomersModule } from './customers/customers.module';
 import { entities } from './typeorm';
 import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [CustomersModule, UsersModule, TypeOrmModule.forRoot({
@@ -16,6 +17,6 @@ import { UsersModule } from './users/users.module';
     // in production this should be false
     // and we should instead use migrations
     synchronize: true
-  })]
+  }), AuthModule]
 })
 export class AppModule {}
