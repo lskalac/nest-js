@@ -12,6 +12,7 @@ export class LocalStrategy extends PassportStrategy(Strategy){
         });
     }
 
+    // by default, nestjs is looking for username
     async validate(username: string, password: string){
         const user = await this.authService.validateUser(username, password);
         if(user)
